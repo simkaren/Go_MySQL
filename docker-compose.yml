@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  go:
+    container_name: go
+    build: ./golang
+    ports:
+      - 8080:8080
+    env_file: ./mysql/.env
+    depends_on:
+      - db
+  db:
+    container_name: db
+    build: ./mysql
+    platform: linux/x86_64
+    tty: true
+    ports: 
+      - 3306:3306
+    env_file: ./mysql/.env
+    volumes:
+      - type: volume
+        source: mysql-data
+        target: /var/lib/mysql
+      - type: bind
+        source: ./mysql/init
+        target: /docker-entrypoint-initdb.d
+
+volumes:
+  mysql-data:
+    name: mysql-volume
